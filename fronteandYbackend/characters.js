@@ -4,19 +4,18 @@ Los cambios efectuados por cada request se verifican a traves del frontend
 
 -------------------------------------------------------------------------------------------------------------------------------------------------- 
 
-<reference types="cypress" /> - No funciona
+*/ 
 
-import { RestoolApp } from "C:\Users\mrasso\OneDrive - ENDAVA\Desktop\Cypress\cypress\pageObjects"; - No funciona */
+import RestoolApp from '../pageObjects/RestoolApp'; // Ruta desde este archivo hasta el archivo donde tengo mis clases (sin la extension .js)
 
-describe("RESTool APP Cast & Characters", () => {
+describe("RESTool APP Cast & Characters", function() {
 
-   // const restoolObject = new RestoolApp() 
+    const restoolObject = new RestoolApp(); 
 
-    let uniqueSeed = Date.now().toString()
+    let uniqueSeed = Date.now().toString();
     
     beforeEach(() => {
-        //restoolObject.visit()
-        cy.visit('https://dsternlicht.github.io/RESTool/#/characters?search=')
+        restoolObject.visit();
     });
 
     it("Test GET de un personaje", () => { 
@@ -24,7 +23,6 @@ describe("RESTool APP Cast & Characters", () => {
         cy.scrollTo('bottom')
         cy.wait(2000)
         cy.scrollTo('bottom')
-        let numberOfCharacters
         let respuesta = 
                 cy.request({
                     method: 'GET',
@@ -33,12 +31,12 @@ describe("RESTool APP Cast & Characters", () => {
                 }).then((response) => { 
                     expect(response.status).to.eq(200)
                     expect(response.body).to.not.be.null
+                    let characters = response.body.items // characters es un array de objetos (personajes)
+                    let numberOfCharacters = characters.length // Obtengo el numero de personajes y lo guardo en una variable para luego verificarlo con lo que obtenga desde el frontend
+                    cy.get('#root div.app-page > main > div > div > div > div:nth-child(2) > span').should('have.length', numberOfCharacters)
+                    cy.log(numberOfCharacters)
                     return response.body.items.id        // La request devuelve un array de id de los personajes 
                 })
-
-        //cy.get('#root div.app-page > main > div > div > div > div:nth-child(2) > span').should('have.length',3)
-
-        numberOfCharacters = respuesta.length // asignamos la longitud del array de ids (cantidad de personajes) a una variable - No funciona
         
         cy.scrollTo('bottom')
         cy.wait(2000)
@@ -46,8 +44,6 @@ describe("RESTool APP Cast & Characters", () => {
         cy.wait(2000)
         cy.scrollTo('bottom')
         cy.wait(2000)
-
-        //cy.get('#root div.app-page > main > div > div > div > div:nth-child(2) > span').should('have.length', numberOfCharacters) - No funciona
 
         cy.get('#root div.app-page > main > div > div > div > div:nth-child(2) > span').each(($el, index,  $list)=> {
             expect(respuesta).to.include($el.text) // Verifica que cada id ($el.text) se encuentre en el array respuesta = response.body.items.id
@@ -144,4 +140,4 @@ describe("RESTool APP Cast & Characters", () => {
 
         cy.get('#root div:last-child > div:nth-child(2) > span').should('not.have.text',uniqueSeed) // Verificamos que el ultimo personaje en la pagina no sea el que creamos, ya que deberia haber sido eliminado con la request DELETE enviada
     });
-});
+}); 
