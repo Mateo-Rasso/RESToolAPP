@@ -10,19 +10,20 @@ import RestoolApp from '../pageObjects/RestoolApp'; // Ruta desde este archivo h
 
 describe("RESTool APP Cast & Characters", function() {
 
-    const restoolObject = new RestoolApp(); 
+    let restoolObject = new RestoolApp(); 
 
-    let uniqueSeed = Date.now().toString();
+    let uniqueId = Date.now().toString();
     
     beforeEach(() => {
         restoolObject.visit();
     });
 
-    it("Test GET de un personaje", () => { 
+    it("Test GET de todos los personajes", () => {
+
         cy.wait(5000)
-        cy.scrollTo('bottom')
-        cy.wait(2000)
-        cy.scrollTo('bottom')
+
+        restoolObject.scrollAndWait(2000, 'bottom', 2)
+
         let respuesta = 
                 cy.request({
                     method: 'GET',
@@ -33,19 +34,13 @@ describe("RESTool APP Cast & Characters", function() {
                     expect(response.body).to.not.be.null
                     let characters = response.body.items // characters es un array de objetos (personajes)
                     let numberOfCharacters = characters.length // Obtengo el numero de personajes y lo guardo en una variable para luego verificarlo con lo que obtenga desde el frontend
-                    cy.get('#root div.app-page > main > div > div > div > div:nth-child(2) > span').should('have.length', numberOfCharacters)
-                    cy.log(numberOfCharacters)
+                    restoolObject.verifyNumberOfCharacters(numberOfCharacters);
                     return response.body.items.id        // La request devuelve un array de id de los personajes 
                 })
-        
-        cy.scrollTo('bottom')
-        cy.wait(2000)
-        cy.scrollTo('bottom')
-        cy.wait(2000)
-        cy.scrollTo('bottom')
-        cy.wait(2000)
 
-        cy.get('#root div.app-page > main > div > div > div > div:nth-child(2) > span').each(($el, index,  $list)=> {
+        restoolObject.scrollAndWait(2000, 'bottom', 3);
+
+        restoolObject.getAllCharacters().each(($el, index,  $list)=> {
             expect(respuesta).to.include($el.text) // Verifica que cada id ($el.text) se encuentre en el array respuesta = response.body.items.id
             cy.log(index)
             //expect(respuesta[index]).to.equal($el.text)  No funciona ya que "respuesta" es un identificador de una variable y no de un array
@@ -60,7 +55,7 @@ describe("RESTool APP Cast & Characters", function() {
                 url: 'https://restool-sample-app.herokuapp.com/api/character',
                 form: true,
             body:{
-                id: uniqueSeed,
+                id: uniqueId,
                 thumbnail: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT083A3OT8c7vXWhNFcDOM6wyHo7hXer6aIqw&usqp=CAU",
                 name: "Juan",
                 realName: "Martin",
@@ -72,25 +67,23 @@ describe("RESTool APP Cast & Characters", function() {
                 expect(response.body).to.not.be.null
             })
 
-            cy.reload()
-            cy.wait(2000)
-            cy.scrollTo('bottom')
-            cy.wait(2000)
-            cy.scrollTo('bottom')
-            cy.wait(2000)
-            cy.scrollTo('bottom')
-            cy.wait(2000)
-            cy.get('div:last-child > div:nth-child(2) > span').should('have.text', uniqueSeed) // Verificamos que el POST se refleje en el frontend comparando el id del 
+        cy.reload()
+
+        cy.wait(2000)
+
+        restoolObject.scrollAndWait(2000, 'bottom', 3);
+
+        restoolObject.verifyIdOfLastCharacter(uniqueId, 'have.text'); // Verificamos que el POST se refleje en el frontend comparando el id del 
                                                                                             //ultimo personaje en la pagina, con el id del Body del POST.
-        });
+    });
 
     it('Test PUT del personaje creado', () => {       
         
         cy.request({
             method: 'PUT',
-            url: 'https://restool-sample-app.herokuapp.com/api/character/' + uniqueSeed,
+            url: 'https://restool-sample-app.herokuapp.com/api/character/' + uniqueId,
             body:{
-                id: uniqueSeed,
+                id: uniqueId,
                 thumbnail: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT083A3OT8c7vXWhNFcDOM6wyHo7hXer6aIqw&usqp=CAU',
                 name: 'Juan',
                 realName: 'Martin',
@@ -106,13 +99,12 @@ describe("RESTool APP Cast & Characters", function() {
     // -------------------------- Comprobamos que el personaje haya sido editado comparando el backend con el frontend para verificar la request de tipo PUT ---------------------------------------
 
         cy.reload() // Refrescamos la pagina para verificar que los cambios realizados con el PUT se reflejen en el frontend 
-        cy.wait(2000)
-        cy.scrollTo('bottom')
-        cy.wait(2000)
-        cy.scrollTo('bottom')
-        cy.wait(2000)
         
-        cy.get('#root div:last-child > div:nth-child(5) > span').should('have.text', 'Beyond the wall')
+        cy.wait(2000)
+
+        restoolObject.scrollAndWait(2000, 'bottom', 2);
+        
+        restoolObject.verifyLocationOfLastCharacter('Beyond the wall');
     });
 
     // ------------------------- Enviamos una request de tipo DELETE para eliminar el personaje creado ---------------------------------------------------------------
@@ -123,7 +115,7 @@ describe("RESTool APP Cast & Characters", function() {
 
         cy.request({
             method: 'DELETE',
-            url: 'https://restool-sample-app.herokuapp.com/api/character/' + uniqueSeed
+            url: 'https://restool-sample-app.herokuapp.com/api/character/' + uniqueId
         }).then((response) => {
             expect(response.status).to.eq(200)
             expect(response.body).to.not.be.null
@@ -133,11 +125,9 @@ describe("RESTool APP Cast & Characters", function() {
         cy.reload() // Refrescamos la pagina para verificar que los cambios realizados con el DELETE se reflejen en el frontend
 
         cy.wait(1000)
-        cy.scrollTo('bottom')
-        cy.wait(2000)
-        cy.scrollTo('bottom')
-        cy.wait(2000)
+        
+        restoolObject.scrollAndWait(2000, 'bottom', 2);
 
-        cy.get('#root div:last-child > div:nth-child(2) > span').should('not.have.text',uniqueSeed) // Verificamos que el ultimo personaje en la pagina no sea el que creamos, ya que deberia haber sido eliminado con la request DELETE enviada
+        restoolObject.verifyIdOfLastCharacter(uniqueId, 'not.have.text') // Verificamos que el ultimo personaje en la pagina no sea el que creamos, ya que deberia haber sido eliminado con la request DELETE enviada
     });
 }); 
