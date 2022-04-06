@@ -18,7 +18,7 @@ describe("RESTool APP Cast & Characters", function() {
         restoolObject.visit();
     });
 
-    it("Test GET de todos los personajes", () => {
+    it("Test GET de todos los personajes y verifico que los personajes se encuentren en el frontend", () => {
 
         cy.wait(5000)
 
@@ -40,7 +40,7 @@ describe("RESTool APP Cast & Characters", function() {
 
         restoolObject.scrollAndWait(2000, 'bottom', 3);
 
-        restoolObject.getAllCharacters().each(($el, index,  $list)=> {
+        restoolObject.getAllCharacters().each(($el, index,  $list) => {
             expect(respuesta).to.include($el.text) // Verifica que cada id ($el.text) se encuentre en el array respuesta = response.body.items.id
             cy.log(index)
             //expect(respuesta[index]).to.equal($el.text)  No funciona ya que "respuesta" es un identificador de una variable y no de un array
@@ -48,7 +48,7 @@ describe("RESTool APP Cast & Characters", function() {
     });
 
     
-    it('Test POST de un personaje', () => {
+    it('Test POST de un personaje y verifico que el personaje creado se muestre en el frontend', () => {
         
         cy.request({
                 method: 'POST',
@@ -74,10 +74,10 @@ describe("RESTool APP Cast & Characters", function() {
         restoolObject.scrollAndWait(2000, 'bottom', 3);
 
         restoolObject.verifyIdOfLastCharacter(uniqueId, 'have.text'); // Verificamos que el POST se refleje en el frontend comparando el id del 
-                                                                                            //ultimo personaje en la pagina, con el id del Body del POST.
+                                                                      //ultimo personaje en la pagina, con el id del Body del POST.
     });
 
-    it('Test PUT del personaje creado', () => {       
+    it('Test PUT del personaje creado y verifico que las modificaciones se muestren en el frontend', () => {       
         
         cy.request({
             method: 'PUT',
@@ -94,7 +94,7 @@ describe("RESTool APP Cast & Characters", function() {
                 expect(response.status).to.be.eq(200)
                 expect(response.body).to.not.be.null
                 expect(response.body).to.be.eq('ok')
-        })
+                })
 
     // -------------------------- Comprobamos que el personaje haya sido editado comparando el backend con el frontend para verificar la request de tipo PUT ---------------------------------------
 
