@@ -12,10 +12,12 @@ describe("RESTool APP Cast & Characters", function() {
 
     let restoolObject = new RestoolApp(); 
 
+    //let uniqueId = restoolObject.createId();
+
     let uniqueId = Date.now().toString();
     
     beforeEach(() => {
-        restoolObject.visit();
+        restoolObject.visitCharacters();
     });
 
     it("Test GET de todos los personajes y verifico que los personajes se encuentren en el frontend", () => {
@@ -24,7 +26,7 @@ describe("RESTool APP Cast & Characters", function() {
 
         restoolObject.scrollAndWait(2000, 'bottom', 2)
 
-        let respuesta = 
+        let arrayIds =
                 cy.request({
                     method: 'GET',
                     url: 'https://restool-sample-app.herokuapp.com/api/character',
@@ -35,15 +37,19 @@ describe("RESTool APP Cast & Characters", function() {
                     let characters = response.body.items // characters es un array de objetos (personajes)
                     let numberOfCharacters = characters.length // Obtengo el numero de personajes y lo guardo en una variable para luego verificarlo con lo que obtenga desde el frontend
                     restoolObject.verifyNumberOfCharacters(numberOfCharacters);
-                    return response.body.items.id        // La request devuelve un array de id de los personajes 
+                    /*for(let i = 0; i < characters.length; i++){ Esto deberia funcionar supuestamente, imprime los ids de los personajes. 
+                        cy.log(response.body.items[i].id)        // Probar de nuevo con 9 personajes. (No es prioritario).
+                        cy.log(i)
+                    } */ 
+                    return response.body.items.id // La request devuelve un array de id de los personajes 
                 })
-
+        
         restoolObject.scrollAndWait(2000, 'bottom', 3);
 
         restoolObject.getAllCharacters().each(($el, index,  $list) => {
-            expect(respuesta).to.include($el.text) // Verifica que cada id ($el.text) se encuentre en el array respuesta = response.body.items.id
-            cy.log(index)
-            //expect(respuesta[index]).to.equal($el.text)  No funciona ya que "respuesta" es un identificador de una variable y no de un array
+            expect(arrayIds).to.include($el.text) // Verifica que cada id ($el.text) se encuentre en el array respuesta = response.body.items.id
+            //cy.log(index)
+            //expect(arrayIds[index]).to.equal($el.text)  No funciona ya que "arrayIds" es un identificador de una variable y no de un array
         })
     });
 
@@ -65,6 +71,7 @@ describe("RESTool APP Cast & Characters", function() {
             }).then(async(response) => {
                 await expect(response.status).to.eq(200)
                 expect(response.body).to.not.be.null
+                expect(response.body.id).to.be.eq(uniqueId)
             })
 
         cy.reload()

@@ -2,12 +2,15 @@
 
 //------------------------ Realizar un POST al endpoint de employees y validar su creacion en el frontend -----------------------------
 
+import RestoolApp from '../pageObjects/RestoolApp';
 
 describe('RESTool APP employees', () => {
 
+    let restoolObject = new RestoolApp;
+
     it('POST al endpoint de employees y validamos su creacion en el frontend', () => {
 
-        cy.request({
+       let employeeId = cy.request({
             method: 'POST',
             url: 'https://restool-sample-app.herokuapp.com/api/employee',
             form: true,
@@ -23,13 +26,16 @@ describe('RESTool APP employees', () => {
             expect(response.body.id).to.be.eq('0001')
             expect(response.body.name).to.be.eq('Juan Carlos')
             expect(response.body.jobTitle).to.be.eq('RESTool creator 😎')
-            expect(response.body.isFired).to.be.eq(true)
+            //expect(response.body.isFired).to.be.true
+            return response.body.id
             })
 
-        cy.visit('https://dsternlicht.github.io/RESTool/#/employees?search=&page=1&limit=10')
+        restoolObject.visitEmployees();
 
-        cy.get('#root > div > div.app-page > main > div > table > tbody > tr td:nth-child(1) > span')
-
+        /*cy.get('#root > div > div.app-page > main > div > table > tbody > tr td:nth-child(1) > span').each(($el, $index, $list) => {
+            if(employeeId == $el.text){
+            }
+        })*/
 
     });
 });
