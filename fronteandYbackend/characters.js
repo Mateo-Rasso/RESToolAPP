@@ -12,7 +12,7 @@ describe("Verificacion de los datos del backend con el frontend utilizando una r
 
     let restoolObject = new RestoolApp();
 
-    it("Verificar que pueda obtener todos los personajes con un GET y que se encuentren en el frontend", () => {
+    it("TEST - Verificar que pueda obtener todos los personajes con un GET y que se encuentren en el frontend", () => {
 
         restoolObject.visitCharacters();
 
@@ -32,9 +32,9 @@ describe("Verificacion de los datos del backend con el frontend utilizando una r
                     let numberOfCharacters = characters.length // Obtengo el numero de personajes y lo guardo en una variable para luego verificarlo con lo que obtenga desde el frontend
                     restoolObject.verifyNumberOfCharacters(numberOfCharacters);
                     /*for(let i = 0; i < characters.length; i++){ Esto deberia funcionar supuestamente, imprime los ids de los personajes. 
-                        cy.log(response.body.items[i].id)        // Probar de nuevo con 9 personajes. (No es prioritario).
+                        cy.log(response.body.items[i].id)        
                         cy.log(i)
-                    } */ 
+                    }*/ 
                     return response.body.items.id // La request devuelve un array de id de los personajes 
                 })
         
@@ -43,7 +43,6 @@ describe("Verificacion de los datos del backend con el frontend utilizando una r
         restoolObject.getAllCharacters().each(($el, index,  $list) => {
             expect(arrayIds).to.include($el.text) // Verifica que cada id ($el.text) se encuentre en el array respuesta = response.body.items.id
             //cy.log(index)
-            //expect(arrayIds[index]).to.equal($el.text)  No funciona ya que "arrayIds" es un identificador de una variable y no de un array
         })
     });
 });
@@ -87,7 +86,7 @@ describe('Se realizan POST y PUT de un personaje y se verifica su creacion en el
         restoolObject.scrollAndWait(2250, 'bottom', 3);
 
         restoolObject.verifyIdOfLastCharacter(uniqueId, 'have.text'); // Verificamos que el POST se refleje en el frontend comparando el id del 
-                                                                  //ultimo personaje en la pagina, con el id del Body del POST.
+                                                                     //ultimo personaje en la pagina, con el id del Body del POST.
     });
 
     afterEach(() => {
@@ -112,11 +111,11 @@ describe('Se realizan POST y PUT de un personaje y se verifica su creacion en el
         restoolObject.verifyIdOfLastCharacter(uniqueId, 'not.have.text') // Verificamos que el ultimo personaje en la pagina no sea el que creamos, ya que deberia haber sido eliminado con la request DELETE enviada
     });
 
-    it('Verificacion de que el POST de un personaje se efectue y valido su creacion desde el frontend', () => {
+    it('TEST - Verificacion de que el POST de un personaje se efectue y valido su creacion desde el frontend', () => {
         // En este test se ejecutaria el POST del beforeEach. La idea es poder probar el POST por separado para ver si funciona y despues realizar otro POST para probar el PUT
     });
 
-    it('Realizo un PUT de un personaje creado y valido la modificacion de su "location" a traves del frontend', () => {       
+    it('TEST - Realizo un POST y luego un PUT del mismo personaje y valido la modificacion de su propiedad "location" a traves del frontend', () => {       
         
         newLocation = 'Beyond the wall';
 

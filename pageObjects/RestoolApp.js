@@ -7,10 +7,6 @@ class RestoolApp {
         cy.visit('https://dsternlicht.github.io/RESTool/#/employees?search=&page=1&limit=50')
     }
 
-    /*createId() {
-        return Date.Now().toString();
-    }*/
-
     verifyNumberOfCharacters(number) {
         cy.get('#root div.app-page > main > div > div > div > div:nth-child(2) > span').should('have.length', number);
     }
