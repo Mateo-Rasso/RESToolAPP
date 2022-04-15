@@ -26,7 +26,7 @@ class RestoolApp {
         cy.get('#root div:last-child > div:nth-child(5) > span').should('have.text', location);
     }
 
-    getAllCharacters() {
+    getAllCharacterIds() {
         return cy.get('#root div.app-page > main > div > div > div > div:nth-child(2) > span')
     }
 }

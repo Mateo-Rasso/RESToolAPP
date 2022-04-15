@@ -40,7 +40,7 @@ describe("Verificacion de los datos del backend con el frontend utilizando una r
         
         restoolObject.scrollAndWait(2000, 'bottom', 3);
 
-        restoolObject.getAllCharacters().each(($el, index,  $list) => {
+        restoolObject.getAllCharacterIds().each(($el, index,  $list) => {
             expect(arrayIds).to.include($el.text) // Verifica que cada id ($el.text) se encuentre en el array respuesta = response.body.items.id
             //cy.log(index)
         })
