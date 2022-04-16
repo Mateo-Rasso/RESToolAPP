@@ -18,35 +18,21 @@ describe('', () => {
     
         characterObject = cy.request({
             method: 'GET',
-            url: 'https://restool-sample-app.herokuapp.com/api/character/du7WaAUDF88G',
+            url: 'https://restool-sample-app.herokuapp.com/api/character/BwDkxNbYaPox',
             form: true 
         }).then( async (response) => {
             expect(response.status).to.be.eq(200)
             expect(response.body).to.not.be.null
             returnObject = new Character(response.body.name, response.body.id, response.body.realName);
-            return JSON.stringify(returnObject);
-        })
-        cy.log(characterObject.name)
-    });
-
-    it.skip('TEST - GET de todos los personajes y los meto en un array', () => { // crear una instancia de la clase Character en este ejercicio pero adentro del "for"
-        let character, resp, characterId = 'du7WaAUDF88G';
-        resp = cy.request({
-            method: 'GET',
-            url: 'https://restool-sample-app.herokuapp.com/api/character',
-            form: true
-        }).then( async (response) => {
-            expect(response.status).to.be.eq(200)
-            expect(response.body).to.not.be.null
-            for(let i = 0; i < response.body.items; i++){
-                if(response.body.items[i].id == characterId){
-                    character = response.body.items[i];
-                }
-            }
-            return JSON.stringify(character);
+            cy.log('hola ' + returnObject.characterName) // Muestra "hola undefined" 
+            cy.log('hola ' + response.body.name) // Muestra "hola undefined"
+            return returnObject;
         })
 
-        //cy.log(resp)
+        cy.log(characterObject)
+
+        cy.log(characterObject.characterName)
+        
     });
 });
 
