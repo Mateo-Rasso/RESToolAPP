@@ -18,20 +18,18 @@ describe('', () => {
     
         characterObject = cy.request({
             method: 'GET',
-            url: 'https://restool-sample-app.herokuapp.com/api/character/BwDkxNbYaPox',
+            url: 'https://restool-sample-app.herokuapp.com/api/character/BFwpCFxY6y8P',
             form: true 
         }).then( async (response) => {
             expect(response.status).to.be.eq(200)
             expect(response.body).to.not.be.null
             returnObject = new Character(response.body.name, response.body.id, response.body.realName);
-            cy.log('hola ' + returnObject.characterName) // Muestra "hola undefined" 
-            cy.log('hola ' + response.body.name) // Muestra "hola undefined"
-            return returnObject;
+            cy.log(returnObject.characterName) // Esto funiona. Imprime el nombre del personaje.
+            cy.log(response.body.name) // Esto funciona. Imprime el nombre del personaje.
+            return JSON.stringify(returnObject);
         })
 
-        cy.log(characterObject)
-
-        cy.log(characterObject.characterName)
+        cy.log(characterObject.characterName) // Esto NO funciona. No imprime el nombre
         
     });
 });
